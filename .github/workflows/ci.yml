@@ -1,38 +1,49 @@
 name: School Management CI
+
 on:
   push:
     branches: [main, master, develop]
   pull_request:
     branches: [main, master, develop]
   workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
   build-test:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
           cache: maven
+
       - name: Verify Java
         run: java -version
+
       - name: Run JUnit and REST Assured tests; build WAR
         run: mvn --batch-mode --no-transfer-progress clean verify
+
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: junit-reports
           path: target/surefire-reports/
+          retention-days: 7
           if-no-files-found: warn
+
       - name: Upload deployable WAR
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: school-management-war
           path: target/school-management-system.war
+          retention-days: 1
           if-no-files-found: error
