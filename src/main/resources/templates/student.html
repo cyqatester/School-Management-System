@@ -1,0 +1,41 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+    <header><b>School Portal</b><span th:text="${me.firstName+' '+me.lastName}"></span>
+        <form th:action="@{/logout}" method="post"><button class="secondary">Log out</button></form>
+    </header>
+    <main>
+        <p class="eyebrow">STUDENT PORTAL</p>
+        <h1>My dashboard</h1>
+        <p class="success" th:if="${success}" th:text="${success}"></p>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+        <section>
+            <h2>My profile · STUDENT</h2>
+            <form th:action="@{/profile}" method="post" class="grid"><label>First name<input name="firstName"
+                        th:value="${profile.firstName}" required></label><label>Last name<input name="lastName"
+                        th:value="${profile.lastName}" required></label><label>Username<input name="username"
+                        th:value="${profile.username}" required></label><label>New password<input type="password"
+                        name="password" placeholder="Leave blank to keep current"></label><button>Save profile</button>
+            </form>
+            <p class="hint">Passwords are write-only and stored as secure hashes; the existing password is never
+                displayed.</p>
+        </section>
+        <section>
+            <h2>My assigned teachers</h2>
+            <p th:if="${#lists.isEmpty(teachers)}">No teachers assigned yet.</p>
+            <ul>
+                <li th:each="t:${teachers}" th:text="${t.firstName+' '+t.lastName+' · '+t.username}"></li>
+            </ul>
+        </section>
+    </main>
+</body>
+
+</html>

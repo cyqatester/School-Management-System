@@ -1,0 +1,135 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+    <header><b>School Portal</b><span th:text="${me.firstName+' '+me.lastName}"></span>
+        <form th:action="@{/logout}" method="post"><button class="secondary">Log out</button></form>
+    </header>
+    <main>
+        <p class="eyebrow">ADMINISTRATION</p>
+        <h1>Admin dashboard</h1>
+        <p class="success" th:if="${success}" th:text="${success}"></p>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+        <section>
+            <h2>My profile · ADMIN</h2>
+            <form th:action="@{/profile}" method="post" class="grid"><label>First name<input name="firstName"
+                        th:value="${profile.firstName}" required></label><label>Last name<input name="lastName"
+                        th:value="${profile.lastName}" required></label><label>Username<input name="username"
+                        th:value="${profile.username}" required></label><label>New password<input type="password"
+                        name="password" placeholder="Leave blank to keep current"></label><button>Save profile</button>
+            </form>
+        </section>
+        <section>
+            <h2>Manage accounts</h2>
+            <nav class="tabs"><button type="button" onclick="showTab('admins')">Admins</button><button type="button"
+                    onclick="showTab('teachers')">Teachers</button><button type="button"
+                    onclick="showTab('students')">Students</button></nav>
+            <div id="admins" class="tab">
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Protection</th>
+                    </tr>
+                    <tr th:each="u:${admins}">
+                        <td th:text="${u.firstName+' '+u.lastName}"></td>
+                        <td th:text="${u.username}"></td>
+                        <td><span th:if="${u.protectedAccount}">Protected superadmin</span><span
+                                th:unless="${u.protectedAccount}">
+                                <details>
+                                    <summary>Edit</summary>
+                                    <form th:action="@{/admin/users/{id}/update(id=${u.id})}" method="post"
+                                        class="grid"><input name="firstName" th:value="${u.firstName}" required><input
+                                            name="lastName" th:value="${u.lastName}" required><input name="username"
+                                            th:value="${u.username}" required><input type="password" name="password"
+                                            placeholder="New password optional"><input type="hidden" name="role"
+                                            value="ADMIN"><button>Save</button></form>
+                                </details>
+                                <form th:action="@{/admin/users/{id}/delete(id=${u.id})}" method="post"><button
+                                        class="danger">Delete</button></form>
+                            </span></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="teachers" class="tab" hidden>
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Actions</th>
+                    </tr>
+                    <tr th:each="u:${teachers}">
+                        <td th:text="${u.firstName+' '+u.lastName}"></td>
+                        <td th:text="${u.username}"></td>
+                        <td>
+                            <details>
+                                <summary>Edit</summary>
+                                <form th:action="@{/admin/users/{id}/update(id=${u.id})}" method="post" class="grid">
+                                    <input name="firstName" th:value="${u.firstName}"><input name="lastName"
+                                        th:value="${u.lastName}"><input name="username" th:value="${u.username}"><input
+                                        type="password" name="password"
+                                        placeholder="New password optional"><button>Save</button></form>
+                            </details>
+                            <form th:action="@{/admin/users/{id}/delete(id=${u.id})}" method="post"><button
+                                    class="danger">Delete</button></form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="students" class="tab" hidden>
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Assign teachers / edit</th>
+                    </tr>
+                    <tr th:each="u:${students}">
+                        <td th:text="${u.firstName+' '+u.lastName}"></td>
+                        <td th:text="${u.username}"></td>
+                        <td>
+                            <details>
+                                <summary>Edit assignments</summary>
+                                <form th:action="@{/admin/users/{id}/update(id=${u.id})}" method="post" class="grid">
+                                    <input name="firstName" th:value="${u.firstName}"><input name="lastName"
+                                        th:value="${u.lastName}"><input name="username" th:value="${u.username}"><input
+                                        type="password" name="password" placeholder="New password optional"><label
+                                        th:each="t:${allTeachers}"><input type="checkbox" name="teacherIds"
+                                            th:value="${t.id}" th:checked="${u.teacherIds.contains(t.id)}"><span
+                                            th:text="${t.firstName+' '+t.lastName}"></span></label><button>Save</button>
+                                </form>
+                            </details>
+                            <form th:action="@{/admin/users/{id}/delete(id=${u.id})}" method="post"><button
+                                    class="danger">Delete</button></form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+        <section>
+            <h2>Create account</h2>
+            <form th:action="@{/admin/users}" method="post" class="grid"><label>First name<input name="firstName"
+                        required></label><label>Last name<input name="lastName" required></label><label>Username<input
+                        name="username" required></label><label>Password<input type="password" name="password"
+                        minlength="8" required></label><label>Role<select name="role" id="role"
+                        onchange="document.getElementById('assign').hidden=this.value!=='STUDENT'">
+                        <option value="STUDENT">Student</option>
+                        <option value="TEACHER">Teacher</option>
+                        <option value="ADMIN">Admin</option>
+                    </select></label>
+                <div id="assign"><label th:each="t:${allTeachers}"><input type="checkbox" name="teacherIds"
+                            th:value="${t.id}"><span th:text="${t.firstName+' '+t.lastName}"></span></label></div>
+                <button>Create</button>
+            </form>
+        </section>
+    </main>
+    <script>function showTab(id) { document.querySelectorAll('.tab').forEach(x => x.hidden = x.id !== id); }</script>
+</body>
+
+</html>

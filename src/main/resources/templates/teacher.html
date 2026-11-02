@@ -1,0 +1,69 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+    <header><b>School Portal</b><span th:text="${me.firstName+' '+me.lastName}"></span>
+        <form th:action="@{/logout}" method="post"><button class="secondary">Log out</button></form>
+    </header>
+    <main>
+        <p class="eyebrow">TEACHER PORTAL</p>
+        <h1>My dashboard</h1>
+        <p class="success" th:if="${success}" th:text="${success}"></p>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+        <section>
+            <h2>My profile · TEACHER</h2>
+            <form th:action="@{/profile}" method="post" class="grid"><label>First name<input name="firstName"
+                        th:value="${profile.firstName}" required></label><label>Last name<input name="lastName"
+                        th:value="${profile.lastName}" required></label><label>Username<input name="username"
+                        th:value="${profile.username}" required></label><label>New password<input type="password"
+                        name="password" placeholder="Leave blank to keep current"></label><button>Save profile</button>
+            </form>
+        </section>
+        <section>
+            <h2>Assigned students</h2>
+            <details>
+                <summary>Add student</summary>
+                <form th:action="@{/teacher/students}" method="post" class="grid"><label>First name<input
+                            name="firstName" required></label><label>Last name<input name="lastName"
+                            required></label><label>Username<input name="username" required></label><label>Temporary
+                        password<input type="password" name="password" minlength="8" required></label><button>Create
+                        student</button></form>
+            </details>
+            <p th:if="${#lists.isEmpty(students)}">No students assigned.</p>
+            <div class="table-wrap">
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Edit / delete</th>
+                    </tr>
+                    <tr th:each="s:${students}">
+                        <td th:text="${s.firstName+' '+s.lastName}"></td>
+                        <td th:text="${s.username}"></td>
+                        <td>
+                            <details>
+                                <summary>Edit</summary>
+                                <form th:action="@{/teacher/students/{id}/update(id=${s.id})}" method="post"
+                                    class="grid"><input name="firstName" th:value="${s.firstName}" required><input
+                                        name="lastName" th:value="${s.lastName}" required><input name="username"
+                                        th:value="${s.username}" required><input type="password" name="password"
+                                        placeholder="New password optional"><button>Save</button></form>
+                            </details>
+                            <form th:action="@{/teacher/students/{id}/delete(id=${s.id})}" method="post"><button
+                                    class="danger">Delete</button></form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>
