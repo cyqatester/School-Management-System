@@ -81,9 +81,28 @@ public class UserService implements CommandLineRunner {
     }
 
     public void delete(String id) {
-        User u = repo.byId(id).orElseThrow();
-        if (u.isProtectedAccount() || u.getUsername().equalsIgnoreCase("superadmin"))
+        delete(id, null);
+    }
+
+    /**
+     * Deletes a user while enforcing administrator self-deletion protection.
+     * An authenticated administrator may delete another eligible account, but
+     * cannot delete their own account. The protected superadmin is never deletable.
+     *
+     * requesterId may be null for trusted internal operations such as a teacher
+     * deleting an assigned student; web admin actions must always supply it.
+     */
+    public void delete(String id, String requesterId) {
+        User u = repo.byId(id).orElseThrow(() -> new NoSuchElementException("User not found."));
+
+        if (requesterId != null && requesterId.equals(id)) {
+            throw new IllegalArgumentException("You cannot delete your own account.");
+        }
+
+        if (u.isProtectedAccount() || u.getUsername().equalsIgnoreCase("superadmin")) {
             throw new IllegalArgumentException("The superadmin account cannot be deleted.");
+        }
+
         repo.delete(id);
     }
 

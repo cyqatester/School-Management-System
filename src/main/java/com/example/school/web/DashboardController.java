@@ -86,9 +86,9 @@ public class DashboardController {
     }
 
     @PostMapping("/admin/users/{id}/delete")
-    public String adminDelete(@PathVariable String id, RedirectAttributes r) {
+    public String adminDelete(Authentication auth, @PathVariable String id, RedirectAttributes r) {
         try {
-            users.delete(id);
+            users.delete(id, me(auth).getId());
             r.addFlashAttribute("success", "Account deleted.");
         } catch (RuntimeException e) {
             r.addFlashAttribute("error", e.getMessage());
