@@ -18,9 +18,15 @@ public class UserService implements CommandLineRunner {
     }
 
     public void run(String... args) {
-        if (repo.all().isEmpty())
+        if (repo.all().isEmpty()) {
             repo.save(new User(UUID.randomUUID().toString(), "Super", "Admin", "superadmin",
                     encoder.encode("ChangeMe123!"), Role.ADMIN, true, List.of()));
+            repo.save(new User(UUID.randomUUID().toString(), "Teacher", "One", "teacher",
+                    encoder.encode("teacher1234"), Role.TEACHER, true, List.of()));
+            repo.save(new User(UUID.randomUUID().toString(), "Student", "One", "student",
+                    encoder.encode("student1234"), Role.STUDENT, true, List.of()));
+        }
+            
     }
 
     public List<User> all() {
