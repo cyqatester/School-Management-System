@@ -1,5 +1,9 @@
 # School Management System
 
+Sample Run
+
+https://github.com/user-attachments/assets/0cbaf4bd-2e1b-4a49-a735-d067313deebc
+
 A web-based School Management System built with Java and Spring Boot that simplifies the management of students, teachers, and administrators. The application provides role-based access, student profile management, teacher assignments, and administrative controls through a web interface.
 
 ## 1. Technologies
