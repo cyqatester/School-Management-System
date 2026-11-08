@@ -21,7 +21,6 @@ The project uses the following technologies:
 - **REST Assured** – API integration testing
 - **GitHub Actions** – Continuous Integration (CI)
 - **Apache Tomcat 11** – Application deployment
-- **Playwright** – Browser-based end-to-end testing (if configured)
 
 ## 2. Features
 
